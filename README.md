@@ -12,23 +12,23 @@ version: 2
 jobs:
   groovy_script_to_jar:
     docker:
-    - image: devatherock/drone-groovy-script-to-jar:2.4-alpine
+      - image: devatherock/drone-groovy-script-to-jar:2.4-alpine
     working_directory: ~/my-repo
     environment:
-      PLUGIN_SCRIPT_PATH: groovy/MyScript.groovy                      # Relative path to the groovy script file
-      PLUGIN_OUTPUT_FILE: build/libs/my-script.jar					  # Relative path to the output file. Optional, defaults to	<script-name>.jar
+      PLUGIN_SCRIPT_PATH: groovy/MyScript.groovy                  # Relative path to the groovy script file
+      PLUGIN_OUTPUT_FILE: build/libs/my-script.jar                # Relative path to the output file. Optional, defaults to	<script-name>.jar
     steps:
-    - checkout
-    - run: sh /scripts/entry-point.sh
+      - checkout
+      - run: sh /scripts/entry-point.sh
            
 workflows:
   version: 2
   script_to_jar:
     jobs:
-    - sync:
-        filters:
-          branches:
-            only: master                                       # Source branch
+      - sync:
+          filters:
+            branches:
+              only: master                                        # Source branch
 ```
 
 ## drone.io
