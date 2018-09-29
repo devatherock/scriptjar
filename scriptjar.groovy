@@ -135,14 +135,15 @@ byte[] createUberjar(File file, String prefix) {
 }
 
 
-if (args.size() < 2) {
+if (args.size() < 1) {
     println "Usage: ./scriptjar.groovy input.groovy output.jar"
     System.exit(1)
 }
 
 File file = new File(args[0])
-String prefix = file.name.substring(0, file.name.indexOf('.'))
+String prefix = file.name.substring(0, file.name.lastIndexOf('.'))
+String outputFileName = args.size() > 1 && args[1] ? args[1] : "${prefix}.jar"
 
-new File(args[1]).withOutputStream {
+new File(outputFileName).withOutputStream {
     it << createUberjar(file, prefix)
 }
