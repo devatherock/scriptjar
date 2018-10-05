@@ -5,3 +5,7 @@
 
 ### 2018-10-02
 - Set the user as root to make writes work with drone
+
+### 2018-10-04
+- Added PR check
+- Upgraded docker image version to `17.12.1-ce`
