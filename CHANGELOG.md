@@ -9,3 +9,6 @@
 ### 2018-10-04
 - Added PR check
 - Upgraded docker image version to `17.12.1-ce`
+
+### 2019-02-18
+- Created plugin for `groovy 2.5`
