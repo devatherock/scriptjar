@@ -12,3 +12,6 @@
 
 ### 2019-02-18
 - Created plugin for `groovy 2.5`
+
+### 2020-03-18
+- [Issue 3](https://github.com/devatherock/scriptjar/issues/3): Disabled docker layer caching

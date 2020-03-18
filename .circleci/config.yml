@@ -1,48 +1,44 @@
+docker_image: &docker_image
+  docker:
+    - image: docker:19.03.6
+
 version: 2
 jobs:
   publish_24:
-    docker:
-      - image: docker:17.12.1-ce
+    <<: *docker_image
     working_directory: ~/scriptjar
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - setup_remote_docker
       - run: |
           TAG=2.4-alpine
           docker build -t devatherock/drone-groovy-script-to-jar:$TAG -f 2.4-alpine/Dockerfile .
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
           docker push devatherock/drone-groovy-script-to-jar:$TAG
   publish_25:
-    docker:
-      - image: docker:17.12.1-ce
+    <<: *docker_image
     working_directory: ~/scriptjar
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - setup_remote_docker
       - run: |
           TAG=2.5-alpine
           docker build -t devatherock/drone-groovy-script-to-jar:$TAG -f 2.5-alpine/Dockerfile .
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
           docker push devatherock/drone-groovy-script-to-jar:$TAG
   docker_build_dry_run_24:
-    docker:
-      - image: docker:17.12.1-ce
+    <<: *docker_image
     working_directory: ~/scriptjar
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - setup_remote_docker
       - run: docker build -f 2.4-alpine/Dockerfile .
   docker_build_dry_run_25:
-    docker:
-      - image: docker:17.12.1-ce
+    <<: *docker_image
     working_directory: ~/scriptjar
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - setup_remote_docker
       - run: docker build -f 2.5-alpine/Dockerfile .
 
 workflows:
