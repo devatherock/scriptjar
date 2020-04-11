@@ -1,0 +1,1 @@
+groovy /scripts/scriptjar.groovy "$PARAMETER_SCRIPT_PATH" "$PARAMETER_OUTPUT_FILE"

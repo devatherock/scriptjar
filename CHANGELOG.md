@@ -15,3 +15,6 @@
 
 ### 2020-03-18
 - [Issue 3](https://github.com/devatherock/scriptjar/issues/3): Disabled docker layer caching
+
+### 2020-04-11
+- [Issue 4](https://github.com/devatherock/scriptjar/issues/4): Published images for Vela

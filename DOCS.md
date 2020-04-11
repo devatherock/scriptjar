@@ -7,6 +7,7 @@ The following parameters can be set to configure the plugin.
 
 ## Examples
 
+**Sample drone config:**
 ```yaml
 pipeline:
   groovy_script_to_jar:
@@ -16,4 +17,17 @@ pipeline:
     image: devatherock/drone-groovy-script-to-jar:2.4-alpine
     script_path: groovy/MyScript.groovy
     output_file: build/libs/my-script.jar
+```
+
+**Sample vela config:**
+```yaml
+steps:
+  - name: groovy_script_to_jar:
+    ruleset:
+      branch: master
+      event: push
+    image: devatherock/vela-groovy-script-to-jar:2.4-alpine
+    parameters:
+      script_path: groovy/MyScript.groovy
+      output_file: build/libs/my-script.jar
 ```
