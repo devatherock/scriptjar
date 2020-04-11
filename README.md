@@ -20,7 +20,7 @@ jobs:
     steps:
       - checkout
       - run: sh /scripts/entry-point.sh
-           
+
 workflows:
   version: 2
   script_to_jar:
@@ -31,5 +31,5 @@ workflows:
               only: master                                        # Source branch
 ```
 
-## drone.io
+## drone.io and vela
 Please refer [docs](DOCS.md)

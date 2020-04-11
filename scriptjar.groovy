@@ -23,7 +23,7 @@ List<GroovyClass> compile(String prefix, File file) {
     getSiblingGroovyFiles(file).each {
       classLoader.parseClass(it.text)
     }
-    
+
     // disable groovy grapes - we're resolving these ahead of time
     CompilerConfiguration compilerConfig = new CompilerConfiguration()
     Set disabledTransforms = ['groovy.grape.GrabAnnotationTransformation'] as Set
