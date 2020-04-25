@@ -1,9 +1,12 @@
 [![CircleCI](https://circleci.com/gh/devatherock/scriptjar.svg?style=svg)](https://circleci.com/gh/devaprasadh/scriptjar)
 [![Docker Pulls](https://img.shields.io/docker/pulls/devatherock/drone-groovy-script-to-jar.svg)](https://hub.docker.com/r/devatherock/drone-groovy-script-to-jar/)
-[![Microbadger](https://images.microbadger.com/badges/image/devatherock/drone-groovy-script-to-jar.svg)](https://microbadger.com/images/devatherock/drone-groovy-script-to-jar)
+[![Docker Pulls](https://img.shields.io/docker/pulls/devatherock/vela-groovy-script-to-jar.svg)](https://hub.docker.com/r/devatherock/vela-groovy-script-to-jar/)
+[![Docker Image Size](https://img.shields.io/docker/image-size/devatherock/vela-groovy-script-to-jar.svg?sort=date)](https://hub.docker.com/r/devatherock/vela-groovy-script-to-jar/)
+[![Docker Image Layers](https://img.shields.io/microbadger/layers/devatherock/vela-groovy-script-to-jar.svg)](https://microbadger.com/images/devatherock/vela-groovy-script-to-jar)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # drone-groovy-script-to-jar
 
-drone.io/CircleCI plugin to convert Groovy scripts to JVM executable JAR. It packages all `@Grab` dependencies and Groovy lib, so it can
+drone.io/CircleCI/vela plugin to convert Groovy scripts to JVM executable JAR. It packages all `@Grab` dependencies and Groovy lib, so it can
 be run without Groovy on target machine. Main class name is the same as original script name.
 
 # Usage
