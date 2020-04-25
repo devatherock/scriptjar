@@ -1,5 +1,6 @@
 [![CircleCI](https://circleci.com/gh/devatherock/scriptjar.svg?style=svg)](https://circleci.com/gh/devaprasadh/scriptjar)
 [![Docker Pulls](https://img.shields.io/docker/pulls/devatherock/drone-groovy-script-to-jar.svg)](https://hub.docker.com/r/devatherock/drone-groovy-script-to-jar/)
+[![Microbadger](https://images.microbadger.com/badges/image/devatherock/drone-groovy-script-to-jar.svg)](https://microbadger.com/images/devatherock/drone-groovy-script-to-jar)
 # drone-groovy-script-to-jar
 
 drone.io/CircleCI plugin to convert Groovy scripts to JVM executable JAR. It packages all `@Grab` dependencies and Groovy lib, so it can
