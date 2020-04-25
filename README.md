@@ -10,17 +10,28 @@ drone.io/CircleCI/vela plugin to convert Groovy scripts to JVM executable JAR. I
 be run without Groovy on target machine. Main class name is the same as original script name.
 
 # Usage
+## Docker
+
+```
+docker run --rm \
+  -v /path/to/target-repo:/work \
+  -w=/work \
+  -e PARAMETER_SCRIPT_PATH=/work/TargetRepoScript.groovy \
+  -e PARAMETER_OUTPUT_FILE=/work/docker/TargetRepoScript.jar \
+  devatherock/vela-groovy-script-to-jar:2.5-alpine
+```  
+
 ## CircleCI
 ```yaml
 version: 2
 jobs:
   groovy_script_to_jar:
     docker:
-      - image: devatherock/drone-groovy-script-to-jar:2.4-alpine
+      - image: devatherock/vela-groovy-script-to-jar:2.5-alpine
     working_directory: ~/my-repo
     environment:
-      PLUGIN_SCRIPT_PATH: groovy/MyScript.groovy                  # Relative path to the groovy script file
-      PLUGIN_OUTPUT_FILE: build/libs/my-script.jar                # Relative path to the output file. Optional, defaults to	<script-name>.jar
+      PARAMETER_SCRIPT_PATH: groovy/MyScript.groovy                  # Relative path to the groovy script file
+      PARAMETER_OUTPUT_FILE: build/libs/my-script.jar                # Relative path to the output file. Optional, defaults to	<script-name>.jar
     steps:
       - checkout
       - run: sh /scripts/entry-point.sh
