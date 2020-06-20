@@ -2,116 +2,124 @@ docker_image: &docker_image
   docker:
     - image: docker:19.03.6
 
-version: 2
+slack_image: &slack_image
+  docker:
+    - image: devatherock/simple-slack:0.4.0
+
+work_directory: &work_directory
+  working_directory: ~/scriptjar
+
+resource_class: &resource_class
+  resource_class: small
+
+version: 2.1
 jobs:
-  publish_drone_24:
+  publish_24:
     <<: *docker_image
-    working_directory: ~/scriptjar
+    <<: *resource_class
+    <<: *work_directory
     steps:
       - checkout
       - setup_remote_docker
       - run: |
           TAG=2.4-alpine
-          docker build -t devatherock/drone-groovy-script-to-jar:$TAG -f docker/2.4-alpine/Drone.Dockerfile .
+          docker build --build-arg GROOVY_VERSION=2.4-alpine -t devatherock/drone-groovy-script-to-jar:$TAG -f docker/Dockerfile .
+          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/vela-groovy-script-to-jar:$TAG
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
           docker push devatherock/drone-groovy-script-to-jar:$TAG
-  publish_drone_25:
+          docker push devatherock/vela-groovy-script-to-jar:$TAG
+  publish_25:
     <<: *docker_image
-    working_directory: ~/scriptjar
+    <<: *resource_class
+    <<: *work_directory
     steps:
       - checkout
       - setup_remote_docker
       - run: |
-          TAG=2.5-alpine
-          docker build -t devatherock/drone-groovy-script-to-jar:$TAG -f docker/2.5-alpine/Drone.Dockerfile .
+          TAG=0.6.0
+          GROOVY_VERSION=2.5-alpine
+          docker build --build-arg GROOVY_VERSION=$GROOVY_VERSION -t devatherock/drone-groovy-script-to-jar:$TAG -f docker/Dockerfile .
+          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/drone-groovy-script-to-jar:latest
+          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/drone-groovy-script-to-jar:$GROOVY_VERSION
+          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/vela-groovy-script-to-jar:$TAG
+          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/vela-groovy-script-to-jar:latest
+          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/vela-groovy-script-to-jar:$GROOVY_VERSION
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
           docker push devatherock/drone-groovy-script-to-jar:$TAG
-  publish_vela_24:
-    <<: *docker_image
-    working_directory: ~/scriptjar
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run: |
-          TAG=2.4-alpine
-          docker build -t devatherock/vela-groovy-script-to-jar:$TAG -f docker/2.4-alpine/Vela.Dockerfile .
-          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker push devatherock/drone-groovy-script-to-jar:latest
+          docker push devatherock/drone-groovy-script-to-jar:$GROOVY_VERSION
           docker push devatherock/vela-groovy-script-to-jar:$TAG
-  publish_vela_25:
+          docker push devatherock/vela-groovy-script-to-jar:latest
+          docker push devatherock/vela-groovy-script-to-jar:$GROOVY_VERSION
+
+  docker_build_dry_run_24:
     <<: *docker_image
-    working_directory: ~/scriptjar
+    <<: *resource_class
+    <<: *work_directory
     steps:
       - checkout
       - setup_remote_docker
-      - run: |
-          TAG=2.5-alpine
-          docker build -t devatherock/vela-groovy-script-to-jar:$TAG -f docker/2.5-alpine/Vela.Dockerfile .
-          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker push devatherock/vela-groovy-script-to-jar:$TAG
-  docker_build_dry_run_drone_24:
+      - run: docker build --build-arg GROOVY_VERSION=2.4-alpine -f docker/Dockerfile .
+  docker_build_dry_run_25:
     <<: *docker_image
-    working_directory: ~/scriptjar
+    <<: *resource_class
+    <<: *work_directory
     steps:
       - checkout
       - setup_remote_docker
-      - run: docker build -f docker/2.4-alpine/Drone.Dockerfile .
-  docker_build_dry_run_drone_25:
-    <<: *docker_image
-    working_directory: ~/scriptjar
+      - run: docker build --build-arg GROOVY_VERSION=2.5-alpine -f docker/Dockerfile .
+
+  notify_success:
+    <<: *slack_image
+    <<: *resource_class
+    environment:
+      TEXT: "Success: {{.CircleBuildUrl}} by {{.CircleUsername}}"
+      COLOR: "#33ad7f"
+      CHANNEL: general
+      TITLE: "Build completed"
     steps:
-      - checkout
-      - setup_remote_docker
-      - run: docker build -f docker/2.5-alpine/Drone.Dockerfile .
-  docker_build_dry_run_vela_24:
-    <<: *docker_image
-    working_directory: ~/scriptjar
+      - run: /bin/simpleslack
+  notify_failure:
+    <<: *slack_image
+    <<: *resource_class
+    environment:
+      TEXT: "Failure: {{.CircleBuildUrl}} by {{.CircleUsername}}"
+      COLOR: "#a1040c"
+      CHANNEL: general
+      TITLE: "Build completed"
     steps:
-      - checkout
-      - setup_remote_docker
-      - run: docker build -f docker/2.4-alpine/Vela.Dockerfile .
-  docker_build_dry_run_vela_25:
-    <<: *docker_image
-    working_directory: ~/scriptjar
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run: docker build -f docker/2.5-alpine/Vela.Dockerfile .
+      - run:
+          name: Failure notification
+          command: /bin/simpleslack
+          when: on_fail
 
 workflows:
-  version: 2
+  version: 2.1
   docker_publish:
     jobs:
-      - publish_drone_24:
+      - publish_24:
           filters:
             branches:
               only: master
-      - publish_drone_25:
+      - publish_25:
           filters:
             branches:
               only: master
-      - publish_vela_24:
-          filters:
-            branches:
-              only: master
-      - publish_vela_25:
-          filters:
-            branches:
-              only: master
+      - notify_success:
+          requires:
+            - publish_24
+            - publish_25
+      - notify_failure:
+          requires:
+            - publish_24
+            - publish_25
   pr_check:
     jobs:
-      - docker_build_dry_run_drone_24:
+      - docker_build_dry_run_24:
           filters:
             branches:
               ignore: master
-      - docker_build_dry_run_drone_25:
-          filters:
-            branches:
-              ignore: master
-      - docker_build_dry_run_vela_24:
-          filters:
-            branches:
-              ignore: master
-      - docker_build_dry_run_vela_25:
+      - docker_build_dry_run_25:
           filters:
             branches:
               ignore: master

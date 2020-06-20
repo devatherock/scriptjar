@@ -1,0 +1,40 @@
+SCRIPT_PATH=$PLUGIN_SCRIPT_PATH
+OUTPUT_FILE=$PLUGIN_OUTPUT_FILE
+STATIC_COMPILE=$PLUGIN_STATIC_COMPILE
+NO_SIBLINGS=$PLUGIN_NO_SIBLINGS
+
+if [ "$VELA" = "true" ]; then
+  if [ ! -z "$PARAMETER_SCRIPT_PATH" ]; then
+    SCRIPT_PATH=$PARAMETER_SCRIPT_PATH
+  fi
+
+  if [ ! -z "$PARAMETER_OUTPUT_FILE" ]; then
+    OUTPUT_FILE=$PARAMETER_OUTPUT_FILE
+  fi
+
+  if [ ! -z "$PARAMETER_STATIC_COMPILE" ]; then
+    STATIC_COMPILE=$PARAMETER_STATIC_COMPILE
+  fi
+
+  if [ ! -z "$PARAMETER_NO_SIBLINGS" ]; then
+    NO_SIBLINGS=$PARAMETER_NO_SIBLINGS
+  fi
+fi
+
+if [ ! -z "$SCRIPT_PATH" ]; then
+   ALL_OPTS="$ALL_OPTS -i $SCRIPT_PATH"
+fi
+
+if [ "$STATIC_COMPILE" = "true" ]; then
+   ALL_OPTS="$ALL_OPTS -s"
+fi
+
+if [ "$NO_SIBLINGS" = "true" ]; then
+   ALL_OPTS="$ALL_OPTS -n"
+fi
+
+if [ ! -z "$OUTPUT_FILE" ]; then
+   ALL_OPTS="$ALL_OPTS -o $OUTPUT_FILE"
+fi
+
+groovy /scripts/scriptjar.groovy $ALL_OPTS

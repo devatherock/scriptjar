@@ -1,1 +1,0 @@
-groovy /scripts/scriptjar.groovy "$PLUGIN_SCRIPT_PATH" "$PLUGIN_OUTPUT_FILE"
