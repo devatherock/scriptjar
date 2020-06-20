@@ -15,6 +15,7 @@ be run without Groovy on target machine. Main class name is the same as original
 docker run --rm \
   -v /path/to/target-repo:/work \
   -w=/work \
+  -e VELA=true \
   -e PARAMETER_SCRIPT_PATH=/work/TargetRepoScript.groovy \
   -e PARAMETER_OUTPUT_FILE=/work/docker/TargetRepoScript.jar \
   -e PARAMETER_STATIC_COMPILE=true \
@@ -30,6 +31,7 @@ jobs:
       - image: devatherock/vela-groovy-script-to-jar:0.6.0
     working_directory: ~/my-repo
     environment:
+      VELA: true
       PARAMETER_SCRIPT_PATH: groovy/MyScript.groovy                  # Relative path to the groovy script file
       PARAMETER_OUTPUT_FILE: build/libs/my-script.jar                # Relative path to the output file. Optional, defaults to	<script-name>.jar
       PARAMETER_STATIC_COMPILE: true                                 # Indicates whether to compile the script statically
