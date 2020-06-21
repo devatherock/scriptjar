@@ -15,7 +15,7 @@ steps:
     ruleset:
       branch: master
       event: push
-    image: devatherock/vela-groovy-script-to-jar:0.6.1
+    image: devatherock/vela-groovy-script-to-jar:0.6.2
     parameters:
       script_path: groovy/MyScript.groovy
       output_file: build/libs/my-script.jar

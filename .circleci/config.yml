@@ -36,7 +36,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: |
-          TAG=0.6.0
+          TAG=0.6.2
           GROOVY_VERSION=2.5-alpine
           docker build --build-arg GROOVY_VERSION=$GROOVY_VERSION -t devatherock/drone-groovy-script-to-jar:$TAG -f docker/Dockerfile .
           docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/drone-groovy-script-to-jar:latest

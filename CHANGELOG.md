@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.2] - 2020-06-21
+### Changed
+- Stopped using environment variable `VELA`
+
 ## [0.6.1] - 2020-06-21
 ### Changed
 - Corrected a log statement
