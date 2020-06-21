@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.1] - 2020-06-21
+### Changed
+- Corrected a log statement
+
 ## [0.6.0] - 2020-06-20
 ### Added
 - Option for static compilation

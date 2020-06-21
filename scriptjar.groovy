@@ -221,7 +221,7 @@ byte[] createUberjar(File file, String prefix) {
     def directories = ['META-INF/', 'META-INF/MANIFEST.MF']
 
     dependencies(file).each { jar ->
-        LOGGER.info("Merging ${file.name}")
+        LOGGER.info("Merging ${jar.name}")
         jar.entries().each { JarEntry entry ->
             if (!directories.contains(entry.name)) {
                 writeJarEntry(jos, entry, jar.getInputStream(entry).getBytes())

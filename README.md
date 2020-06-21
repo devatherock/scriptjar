@@ -19,7 +19,7 @@ docker run --rm \
   -e PARAMETER_SCRIPT_PATH=/work/TargetRepoScript.groovy \
   -e PARAMETER_OUTPUT_FILE=/work/docker/TargetRepoScript.jar \
   -e PARAMETER_STATIC_COMPILE=true \
-  devatherock/vela-groovy-script-to-jar:0.6.0
+  devatherock/vela-groovy-script-to-jar:0.6.1
 ```  
 
 ## CircleCI
@@ -28,7 +28,7 @@ version: 2.1
 jobs:
   groovy_script_to_jar:
     docker:
-      - image: devatherock/vela-groovy-script-to-jar:0.6.0
+      - image: devatherock/vela-groovy-script-to-jar:0.6.1
     working_directory: ~/my-repo
     environment:
       VELA: true
