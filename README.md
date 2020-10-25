@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/devatherock/scriptjar.svg?style=svg)](https://circleci.com/gh/devatherock/scriptjar)
+[![Version](https://img.shields.io/docker/v/devatherock/vela-groovy-script-to-jar?sort=date)](https://hub.docker.com/r/devatherock/vela-groovy-script-to-jar/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/devatherock/vela-groovy-script-to-jar.svg)](https://hub.docker.com/r/devatherock/vela-groovy-script-to-jar/)
 [![Docker Image Size](https://img.shields.io/docker/image-size/devatherock/vela-groovy-script-to-jar.svg?sort=date)](https://hub.docker.com/r/devatherock/vela-groovy-script-to-jar/)
 [![Docker Image Layers](https://img.shields.io/microbadger/layers/devatherock/vela-groovy-script-to-jar.svg)](https://microbadger.com/images/devatherock/vela-groovy-script-to-jar)
