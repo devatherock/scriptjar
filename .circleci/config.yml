@@ -1,75 +1,69 @@
-docker_image: &docker_image
-  docker:
-    - image: docker:19.03.6
-
 slack_image: &slack_image
   docker:
     - image: devatherock/simple-slack:0.4.0
+      auth:
+        username: $DOCKER_USERNAME
+        password: $DOCKER_PASSWORD
 
 work_directory: &work_directory
   working_directory: ~/scriptjar
 
 resource_class: &resource_class
   resource_class: small
+  
+executors:
+  jdk-executor:
+    docker:
+      - image: cimg/openjdk:11.0
+        auth:
+          username: $DOCKER_USERNAME
+          password: $DOCKER_PASSWORD
+    <<: *resource_class
+    <<: *work_directory  
 
 version: 2.1
 jobs:
-  publish_24:
-    <<: *docker_image
-    <<: *resource_class
-    <<: *work_directory
+  publish:
+    executor: jdk-executor
     steps:
       - checkout
       - setup_remote_docker
       - run: |
-          TAG=2.4-alpine
-          docker build --build-arg GROOVY_VERSION=2.4-alpine -t devatherock/drone-groovy-script-to-jar:$TAG -f docker/Dockerfile .
-          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/vela-groovy-script-to-jar:$TAG
-          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker push devatherock/drone-groovy-script-to-jar:$TAG
-          docker push devatherock/vela-groovy-script-to-jar:$TAG
-  publish_25:
-    <<: *docker_image
-    <<: *resource_class
-    <<: *work_directory
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run: |
-          TAG=0.6.2
+          TAG=${CIRCLE_SHA1:0:8}
           GROOVY_VERSION=2.5-alpine
           docker build --build-arg GROOVY_VERSION=$GROOVY_VERSION -t devatherock/drone-groovy-script-to-jar:$TAG -f docker/Dockerfile .
           docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/drone-groovy-script-to-jar:latest
-          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/drone-groovy-script-to-jar:$GROOVY_VERSION
           docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/vela-groovy-script-to-jar:$TAG
           docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/vela-groovy-script-to-jar:latest
-          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/vela-groovy-script-to-jar:$GROOVY_VERSION
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
           docker push devatherock/drone-groovy-script-to-jar:$TAG
           docker push devatherock/drone-groovy-script-to-jar:latest
-          docker push devatherock/drone-groovy-script-to-jar:$GROOVY_VERSION
           docker push devatherock/vela-groovy-script-to-jar:$TAG
           docker push devatherock/vela-groovy-script-to-jar:latest
-          docker push devatherock/vela-groovy-script-to-jar:$GROOVY_VERSION
-
-  docker_build_dry_run_24:
-    <<: *docker_image
-    <<: *resource_class
-    <<: *work_directory
+          
+  publish_release:
+    executor: jdk-executor
     steps:
       - checkout
       - setup_remote_docker
-      - run: docker build --build-arg GROOVY_VERSION=2.4-alpine -f docker/Dockerfile .
-  docker_build_dry_run_25:
-    <<: *docker_image
-    <<: *resource_class
-    <<: *work_directory
+      - run: |
+          TAG=${CIRCLE_TAG#v}
+          DEV_TAG=${CIRCLE_SHA1:0:8}
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker pull devatherock/drone-groovy-script-to-jar:$DEV_TAG
+          docker tag devatherock/drone-groovy-script-to-jar:$DEV_TAG devatherock/drone-groovy-script-to-jar:$TAG
+          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/vela-groovy-script-to-jar:$TAG
+          docker push devatherock/drone-groovy-script-to-jar:$TAG
+          docker push devatherock/vela-groovy-script-to-jar:$TAG        
+
+  docker_build_dry_run:
+    executor: jdk-executor
     steps:
       - checkout
       - setup_remote_docker
       - run: docker build --build-arg GROOVY_VERSION=2.5-alpine -f docker/Dockerfile .
 
-  notify_success:
+  notify:
     <<: *slack_image
     <<: *resource_class
     environment:
@@ -79,47 +73,44 @@ jobs:
       TITLE: "Build completed"
     steps:
       - run: /bin/simpleslack
-  notify_failure:
-    <<: *slack_image
-    <<: *resource_class
-    environment:
-      TEXT: "Failure: {{.CircleBuildUrl}} by {{.CircleUsername}}"
-      COLOR: "#a1040c"
-      CHANNEL: general
-      TITLE: "Build completed"
-    steps:
-      - run:
-          name: Failure notification
-          command: /bin/simpleslack
-          when: on_fail
 
 workflows:
   version: 2.1
   docker_publish:
     jobs:
-      - publish_24:
+      - publish:
+          context:
+            - docker-credentials
           filters:
             branches:
               only: master
-      - publish_25:
+      - notify:
+          context:
+            - docker-credentials
+            - slack-webhook
+          requires:
+            - publish
+  release:
+    jobs:
+      - publish_release:
+          context:
+            - docker-credentials
           filters:
             branches:
-              only: master
-      - notify_success:
+              only: non-existent-branch
+            tags:
+              only: /^v[0-9\.]+$/
+      - notify:
+          context:
+            - docker-credentials
+            - slack-webhook
           requires:
-            - publish_24
-            - publish_25
-      - notify_failure:
-          requires:
-            - publish_24
-            - publish_25
+            - publish_release          
   pr_check:
     jobs:
-      - docker_build_dry_run_24:
-          filters:
-            branches:
-              ignore: master
-      - docker_build_dry_run_25:
+      - docker_build_dry_run:
+          context:
+            - docker-credentials
           filters:
             branches:
               ignore: master
