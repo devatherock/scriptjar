@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- test: Functional tests to test the built docker images
+
 ## [0.6.2] - 2020-06-21
 ### Changed
 - Stopped using environment variable `VELA`

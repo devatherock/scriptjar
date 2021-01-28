@@ -1,3 +1,5 @@
+#!/bin/sh
+
 if [ ! -z "$PLUGIN_SCRIPT_PATH" ]; then
   SCRIPT_PATH=$PLUGIN_SCRIPT_PATH
 elif [ ! -z "$PARAMETER_SCRIPT_PATH" ]; then

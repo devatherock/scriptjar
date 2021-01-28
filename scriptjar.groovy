@@ -1,5 +1,7 @@
 #!/usr/bin/env groovy
 
+import static org.codehaus.groovy.control.Phases.CLASS_GENERATION
+
 import groovy.grape.Grape
 import groovy.transform.CompileStatic
 import groovy.transform.Field
@@ -20,8 +22,6 @@ import groovy.io.FileType
 import groovy.cli.commons.CliBuilder
 
 import java.util.logging.Logger
-
-import static org.codehaus.groovy.control.Phases.CLASS_GENERATION
 
 System.setProperty('java.util.logging.SimpleFormatter.format',
         '%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tL%1$tz %4$s %5$s%6$s%n')
@@ -134,7 +134,7 @@ List<File> getSiblingGroovyFiles(File mainGroovyFile) {
     def groovyFileRe = /.*\.groovy$/
     List<File> files = [] as List<File>
     mainGroovyFile.getAbsoluteFile().getParentFile().eachFile(FileType.FILES) {
-        if (!it.hidden && it.name =~ groovyFileRe && it.name != mainGroovyFile.name && it.name != 'scriptJar.groovy') {
+        if (!it.hidden && it.name =~ groovyFileRe && it.name != mainGroovyFile.name && it.name != 'scriptjar.groovy') {
             files << it
         }
     }
