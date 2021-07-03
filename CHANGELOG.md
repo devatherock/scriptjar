@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 ### Added
+- Functional tests to CI pipeline
+
+## [0.7.0] - 2021-01-27
+### Added
 - test: Functional tests to test the built docker images
 
 ## [0.6.2] - 2020-06-21

@@ -41,6 +41,23 @@ jobs:
           docker push devatherock/vela-groovy-script-to-jar:$TAG
           docker push devatherock/vela-groovy-script-to-jar:latest
           
+  functional_test:
+    machine:
+      image: ubuntu-2004:202010-01
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/scriptjar
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}
+            - v1-dependencies-
+      - run: |
+          ./gradlew test
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}          
   publish_release:
     executor: jdk-executor
     steps:
@@ -84,12 +101,17 @@ workflows:
           filters:
             branches:
               only: master
+      - functional_test:
+          context:
+            - docker-credentials
+          requires:
+            - publish
       - notify:
           context:
             - docker-credentials
             - slack-webhook
           requires:
-            - publish
+            - functional_test
   release:
     jobs:
       - publish_release:
