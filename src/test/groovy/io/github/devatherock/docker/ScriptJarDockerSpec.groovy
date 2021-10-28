@@ -16,19 +16,15 @@ class ScriptJarDockerSpec extends Specification {
     @Shared
     def config = [
             'drone': [
-                    'image'    : 'devatherock/drone-groovy-script-to-jar:latest',
                     'envPrefix': 'PLUGIN_'
             ],
             'vela' : [
-                    'image'    : 'devatherock/vela-groovy-script-to-jar:latest',
                     'envPrefix': 'PARAMETER_'
             ]
     ]
 
     void setupSpec() {
-        config.each { ci ->
-            ProcessUtil.executeCommand("docker pull ${ci.value['image']}")
-        }
+        ProcessUtil.executeCommand("docker pull devatherock/scriptjar:latest")
     }
 
     void cleanup() {
@@ -43,7 +39,7 @@ class ScriptJarDockerSpec extends Specification {
                                                        '-w=/work',
                                                        '-e', "${config[ci].envPrefix}SCRIPT_PATH=/work/src/test/resources/Hello.groovy",
                                                        '-e', "${config[ci].envPrefix}OUTPUT_FILE=/work/build/Hello.jar",
-                                                       config[ci].image])
+                                                       'devatherock/scriptjar:latest'])
         then:
         dockerOutput[0] == 0
 

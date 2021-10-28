@@ -1,6 +1,6 @@
 slack_image: &slack_image
   docker:
-    - image: devatherock/simple-slack:0.4.0
+    - image: devatherock/simple-slack:0.7.0
       auth:
         username: $DOCKER_USERNAME
         password: $DOCKER_PASSWORD
@@ -30,16 +30,12 @@ jobs:
       - setup_remote_docker
       - run: |
           TAG=${CIRCLE_SHA1:0:8}
-          GROOVY_VERSION=2.5-alpine
-          docker build --build-arg GROOVY_VERSION=$GROOVY_VERSION -t devatherock/drone-groovy-script-to-jar:$TAG -f docker/Dockerfile .
-          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/drone-groovy-script-to-jar:latest
-          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/vela-groovy-script-to-jar:$TAG
-          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/vela-groovy-script-to-jar:latest
+          GROOVY_VERSION=3.0.9-jre11
+          docker build --build-arg GROOVY_VERSION=$GROOVY_VERSION -t devatherock/scriptjar:$TAG -f docker/Dockerfile .
+          docker tag devatherock/scriptjar:$TAG devatherock/scriptjar:latest
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker push devatherock/drone-groovy-script-to-jar:$TAG
-          docker push devatherock/drone-groovy-script-to-jar:latest
-          docker push devatherock/vela-groovy-script-to-jar:$TAG
-          docker push devatherock/vela-groovy-script-to-jar:latest
+          docker push devatherock/scriptjar:$TAG
+          docker push devatherock/scriptjar:latest
           
   functional_test:
     machine:
@@ -67,18 +63,16 @@ jobs:
           TAG=${CIRCLE_TAG#v}
           DEV_TAG=${CIRCLE_SHA1:0:8}
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker pull devatherock/drone-groovy-script-to-jar:$DEV_TAG
-          docker tag devatherock/drone-groovy-script-to-jar:$DEV_TAG devatherock/drone-groovy-script-to-jar:$TAG
-          docker tag devatherock/drone-groovy-script-to-jar:$TAG devatherock/vela-groovy-script-to-jar:$TAG
-          docker push devatherock/drone-groovy-script-to-jar:$TAG
-          docker push devatherock/vela-groovy-script-to-jar:$TAG        
+          docker pull devatherock/scriptjar:$DEV_TAG
+          docker tag devatherock/scriptjar:$DEV_TAG devatherock/scriptjar:$TAG
+          docker push devatherock/scriptjar:$TAG
 
   docker_build_dry_run:
     executor: jdk-executor
     steps:
       - checkout
       - setup_remote_docker
-      - run: docker build --build-arg GROOVY_VERSION=2.5-alpine -f docker/Dockerfile .
+      - run: docker build --build-arg GROOVY_VERSION=3.0.9-jre11 -f docker/Dockerfile .
 
   notify:
     <<: *slack_image

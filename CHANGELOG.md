@@ -4,6 +4,10 @@
 ### Added
 - Functional tests to CI pipeline
 
+### Changed
+- [#10](https://github.com/devatherock/scriptjar/issues/10): Upgraded groovy to `3.0.9`
+- Published one docker image instead of two
+
 ## [0.7.0] - 2021-01-27
 ### Added
 - test: Functional tests to test the built docker images
