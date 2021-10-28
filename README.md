@@ -1,9 +1,8 @@
 [![CircleCI](https://circleci.com/gh/devatherock/scriptjar.svg?style=svg)](https://circleci.com/gh/devatherock/scriptjar)
-[![Version](https://img.shields.io/docker/v/devatherock/vela-groovy-script-to-jar?sort=semver)](https://hub.docker.com/r/devatherock/vela-groovy-script-to-jar/)
+[![Version](https://img.shields.io/docker/v/devatherock/scriptjar?sort=semver)](https://hub.docker.com/r/devatherock/scriptjar/)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e334a59aeeac473f8c0138bc538ed4f6)](https://www.codacy.com/gh/devatherock/scriptjar/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=devatherock/scriptjar&amp;utm_campaign=Badge_Grade)
-[![Docker Pulls](https://img.shields.io/docker/pulls/devatherock/vela-groovy-script-to-jar.svg)](https://hub.docker.com/r/devatherock/vela-groovy-script-to-jar/)
-[![Docker Image Size](https://img.shields.io/docker/image-size/devatherock/vela-groovy-script-to-jar.svg?sort=date)](https://hub.docker.com/r/devatherock/vela-groovy-script-to-jar/)
-[![Docker Image Layers](https://img.shields.io/microbadger/layers/devatherock/vela-groovy-script-to-jar.svg)](https://microbadger.com/images/devatherock/vela-groovy-script-to-jar)
+[![Docker Pulls](https://img.shields.io/docker/pulls/devatherock/scriptjar.svg)](https://hub.docker.com/r/devatherock/scriptjar/)
+[![Docker Image Size](https://img.shields.io/docker/image-size/devatherock/scriptjar.svg?sort=date)](https://hub.docker.com/r/devatherock/scriptjar/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # vela-groovy-script-to-jar
 
