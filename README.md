@@ -7,8 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # vela-groovy-script-to-jar
 
-CI plugin to convert Groovy scripts to JVM executable JAR. It packages all `@Grab` dependencies and Groovy lib, so it can
-be run without Groovy on target machine. Main class name is the same as original script name.
+CI plugin to convert Groovy scripts to JVM executable JAR. It packages all `@Grab` dependencies and Groovy libraries, so it can be run without Groovy on target machine. Main class name is the same as original script name.
 
 ## Usage
 ### Docker
@@ -19,15 +18,56 @@ docker run --rm \
   -w=/work \
   -e PARAMETER_SCRIPT_PATH=/work/TargetRepoScript.groovy \
   -e PARAMETER_OUTPUT_FILE=/work/docker/TargetRepoScript.jar \
-  -e PARAMETER_STATIC_COMPILE=true \
-  devatherock/vela-groovy-script-to-jar:latest
+  -e PARAMETER_STATIC_COMPILE=false \
+  devatherock/vela-groovy-script-to-jar:0.7.0
 ```  
 
-### CI
-Please refer [docs](DOCS.md)
+### vela
+#### Config
+
+The following parameters can be set to configure the plugin.
+
+*   **script_path** - Relative path to the groovy script file
+*   **output_file** - Relative path to the output file. Optional, defaults to	`<script-name>.jar`
+*   **static_compile** - Indicates whether to compile the script statically. Defaults to `false`
+
+#### Examples
+
+**Sample vela config:**
+
+```yaml
+steps:
+  - name: groovy_script_to_jar
+    ruleset:
+      branch: master
+      event: push
+    image: devatherock/vela-groovy-script-to-jar:0.7.0
+    parameters:
+      script_path: groovy/MyScript.groovy
+      output_file: build/libs/my-script.jar
+```
+
+### CircleCI
+
+```yaml
+version: 2.1
+jobs:
+  groovy_script_to_jar:
+    docker:
+      - image: devatherock/vela-groovy-script-to-jar:0.7.0
+    working_directory: ~/my-repo
+    environment:
+      PARAMETER_SCRIPT_PATH: groovy/MyScript.groovy                  # Relative path to the groovy script file
+      PARAMETER_OUTPUT_FILE: build/libs/my-script.jar                # Relative path to the output file. Optional, defaults to	<script-name>.jar
+      PARAMETER_STATIC_COMPILE: false                                # Indicates whether to compile the script statically. Defaults to `false`
+    steps:
+      - checkout
+      - run: sh /scripts/entry-point.sh
+```
 
 ## Tests
 To test the latest plugin images, run the below command
+
 ```shell
 ./gradlew test
 ```
