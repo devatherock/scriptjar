@@ -1,10 +1,10 @@
 [![CircleCI](https://circleci.com/gh/devatherock/scriptjar.svg?style=svg)](https://circleci.com/gh/devatherock/scriptjar)
 [![Version](https://img.shields.io/docker/v/devatherock/scriptjar?sort=semver)](https://hub.docker.com/r/devatherock/scriptjar/)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e334a59aeeac473f8c0138bc538ed4f6)](https://www.codacy.com/gh/devatherock/scriptjar/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=devatherock/scriptjar&amp;utm_campaign=Badge_Grade)
-[![Docker Pulls](https://img.shields.io/docker/pulls/devatherock/vela-groovy-script-to-jar.svg)](https://hub.docker.com/r/devatherock/vela-groovy-script-to-jar/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/devatherock/vela-groovy-script-to-jar.svg)](https://hub.docker.com/r/devatherock/scriptjar/)
 [![Docker Image Size](https://img.shields.io/docker/image-size/devatherock/scriptjar.svg?sort=date)](https://hub.docker.com/r/devatherock/scriptjar/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-# vela-groovy-script-to-jar
+# scriptjar
 
 CI plugin to convert Groovy scripts to JVM executable JAR. It packages all `@Grab` dependencies and Groovy libraries, so it can be run without Groovy on target machine. Main class name is the same as original script name.
 
@@ -18,7 +18,7 @@ docker run --rm \
   -e PARAMETER_SCRIPT_PATH=/work/TargetRepoScript.groovy \
   -e PARAMETER_OUTPUT_FILE=/work/docker/TargetRepoScript.jar \
   -e PARAMETER_STATIC_COMPILE=false \
-  devatherock/vela-groovy-script-to-jar:0.7.0
+  devatherock/scriptjar:1.0.0
 ```  
 
 ### vela
@@ -40,7 +40,7 @@ steps:
     ruleset:
       branch: master
       event: push
-    image: devatherock/vela-groovy-script-to-jar:0.7.0
+    image: devatherock/scriptjar:1.0.0
     parameters:
       script_path: groovy/MyScript.groovy
       output_file: build/libs/my-script.jar
@@ -53,7 +53,7 @@ version: 2.1
 jobs:
   groovy_script_to_jar:
     docker:
-      - image: devatherock/vela-groovy-script-to-jar:0.7.0
+      - image: devatherock/scriptjar:1.0.0
     working_directory: ~/my-repo
     environment:
       PARAMETER_SCRIPT_PATH: groovy/MyScript.groovy                  # Relative path to the groovy script file
