@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+### Changed
+- Built a multi-arch docker image
+
 ## [1.0.0] - 2021-10-28
 ### Added
 - Functional tests to CI pipeline
