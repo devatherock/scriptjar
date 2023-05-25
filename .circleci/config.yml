@@ -31,11 +31,16 @@ jobs:
       - run: |
           TAG=${CIRCLE_SHA1:0:8}
           GROOVY_VERSION=3.0.9-jre11
-          docker build --build-arg GROOVY_VERSION=$GROOVY_VERSION -t devatherock/scriptjar:$TAG -f docker/Dockerfile .
-          docker tag devatherock/scriptjar:$TAG devatherock/scriptjar:latest
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker push devatherock/scriptjar:$TAG
-          docker push devatherock/scriptjar:latest
+          docker buildx create --name rockbuilder \
+            --driver docker-container --use --bootstrap
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --push \
+            --build-arg GROOVY_VERSION=$GROOVY_VERSION \
+            -t devatherock/scriptjar:$TAG \
+            -t devatherock/scriptjar:latest \
+            -f docker/Dockerfile .
           
   functional_test:
     machine:
@@ -63,16 +68,23 @@ jobs:
           TAG=${CIRCLE_TAG#v}
           DEV_TAG=${CIRCLE_SHA1:0:8}
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker pull devatherock/scriptjar:$DEV_TAG
-          docker tag devatherock/scriptjar:$DEV_TAG devatherock/scriptjar:$TAG
-          docker push devatherock/scriptjar:$TAG
+          docker buildx create --name rockbuilder \
+            --driver docker-container --use --bootstrap
+          docker buildx imagetools create \
+            -t devatherock/scriptjar:$TAG devatherock/scriptjar:$DEV_TAG
 
   docker_build_dry_run:
     executor: jdk-executor
     steps:
       - checkout
       - setup_remote_docker
-      - run: docker build --build-arg GROOVY_VERSION=3.0.9-jre11 -f docker/Dockerfile .
+      - run: |
+          docker buildx create --name rockbuilder \
+            --driver docker-container --use --bootstrap
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --build-arg GROOVY_VERSION=3.0.9-jre11 \
+            -f docker/Dockerfile .
 
   notify:
     <<: *slack_image
