@@ -41,6 +41,20 @@ jobs:
             -t devatherock/scriptjar:$TAG \
             -t devatherock/scriptjar:latest \
             -f docker/Dockerfile .
+            
+  dockerhub_readme:
+    machine:
+      image: ubuntu-2204:2023.04.2
+    steps:
+      - checkout
+      - run: |
+          docker run -v $PWD:/workspace \
+              -e DOCKERHUB_USERNAME \
+              -e DOCKERHUB_PASSWORD \
+              -e DOCKERHUB_REPOSITORY='devatherock/scriptjar' \
+              -e SHORT_DESCRIPTION='CI plugin to convert Groovy scripts to executable jars' \
+              -e README_FILEPATH='/workspace/README.md' \
+              peterevans/dockerhub-description:3.4.1
           
   functional_test:
     machine:
@@ -107,11 +121,17 @@ workflows:
           filters:
             branches:
               only: master
+      - dockerhub_readme:
+          context:
+            - docker-credentials
+            - dockerhub-readme-credentials
+          requires:
+            - publish
       - functional_test:
           context:
             - docker-credentials
           requires:
-            - publish
+            - dockerhub_readme
       - notify:
           context:
             - docker-credentials
