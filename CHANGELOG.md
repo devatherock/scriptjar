@@ -2,8 +2,12 @@
 
 ## [Unreleased]
 ### Changed
-- Built a multi-arch docker image
 - Updated dockerhub readme in CI pipeline
+- Integration tested the arm image
+
+## [2.0.0] - 2023-05-25
+### Changed
+- Built a multi-arch docker image
 
 ## [1.0.0] - 2021-10-28
 ### Added
