@@ -22,7 +22,7 @@ executors:
     <<: *work_directory
   machine-executor:
     machine:
-      image: ubuntu-2004:202010-01
+      image: ubuntu-2204:2023.04.2
     resource_class: medium
     <<: *work_directory
   arm-executor:
@@ -81,7 +81,7 @@ jobs:
             - v1-dependencies-{{ checksum "build.gradle" }}
             - v1-dependencies-
       - run: |
-          ./gradlew test
+          make test
       - save_cache:
           paths:
             - ~/.gradle

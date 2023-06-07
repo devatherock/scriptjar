@@ -1,5 +1,5 @@
 @Grab(group = 'commons-cli', module = 'commons-cli', version = '1.4')
-@Grab(group = 'org.codehaus.groovy', module = 'groovy-cli-commons', version = '2.5.7')
+@Grab(group = 'org.codehaus.groovy', module = 'groovy-cli-commons', version = '3.0.9')
 
 import groovy.cli.commons.CliBuilder
 

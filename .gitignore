@@ -5,3 +5,6 @@ build/
 .settings
 bin/
 .classpath
+code-formatter.xml
+checkstyle.xml
+codenarc.xml
