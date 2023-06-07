@@ -4,6 +4,7 @@
 ### Changed
 - Updated dockerhub readme in CI pipeline
 - Integration tested the arm image
+- Upgraded gradle to 7
 
 ## [2.0.0] - 2023-05-25
 ### Changed

@@ -1,12 +1,13 @@
 package io.github.devatherock.docker
 
+import java.nio.file.Files
+import java.nio.file.Paths
+
 import io.github.devatherock.util.ProcessUtil
+
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
-
-import java.nio.file.Files
-import java.nio.file.Paths
 
 /**
  * Test class to test the built docker images
@@ -24,6 +25,7 @@ class ScriptJarDockerSpec extends Specification {
     ]
 
     void setupSpec() {
+        System.setProperty('java.util.logging.SimpleFormatter.format', '%5$s%n')
         ProcessUtil.executeCommand("docker pull devatherock/scriptjar:latest")
     }
 

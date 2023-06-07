@@ -68,5 +68,5 @@ jobs:
 To test the latest plugin images, run the below command
 
 ```shell
-./gradlew test
+make test
 ```

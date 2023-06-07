@@ -2,26 +2,25 @@
 
 import static org.codehaus.groovy.control.Phases.CLASS_GENERATION
 
-import groovy.grape.Grape
-import groovy.transform.CompileStatic
-import groovy.transform.Field
-import groovy.transform.TypeChecked
-import org.codehaus.groovy.control.CompilationUnit
-import org.codehaus.groovy.control.CompilerConfiguration
-import org.codehaus.groovy.control.SourceUnit
-import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer
-import org.codehaus.groovy.tools.GroovyClass
-
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
-
-import groovy.io.FileType
-import groovy.cli.commons.CliBuilder
-
 import java.util.logging.Logger
+
+import groovy.cli.commons.CliBuilder
+import groovy.grape.Grape
+import groovy.io.FileType
+import groovy.transform.CompileStatic
+import groovy.transform.Field
+import groovy.transform.TypeChecked
+
+import org.codehaus.groovy.control.CompilationUnit
+import org.codehaus.groovy.control.CompilerConfiguration
+import org.codehaus.groovy.control.SourceUnit
+import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer
+import org.codehaus.groovy.tools.GroovyClass
 
 System.setProperty('java.util.logging.SimpleFormatter.format',
         '%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tL%1$tz %4$s %5$s%6$s%n')
