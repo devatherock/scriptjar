@@ -1,4 +1,4 @@
-ARG GROOVY_VERSION
+ARG GROOVY_VERSION=3.0.9-jre11
 FROM groovy:${GROOVY_VERSION}
 
 LABEL maintainer="devatherock@gmail.com"
