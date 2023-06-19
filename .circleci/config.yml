@@ -1,23 +1,24 @@
+docker_auth: &docker_auth
+  auth:
+    username: $DOCKER_USERNAME
+    password: $DOCKER_PASSWORD
+
 slack_image: &slack_image
   docker:
-    - image: devatherock/simple-slack:0.7.0
-      auth:
-        username: $DOCKER_USERNAME
-        password: $DOCKER_PASSWORD
+    - image: devatherock/simple-slack:1.0.0
+      <<: *docker_auth
 
 work_directory: &work_directory
   working_directory: ~/scriptjar
 
 resource_class: &resource_class
   resource_class: small
-  
+
 executors:
   jdk-executor:
     docker:
       - image: cimg/openjdk:11.0
-        auth:
-          username: $DOCKER_USERNAME
-          password: $DOCKER_PASSWORD
+        <<: *docker_auth
     <<: *resource_class
     <<: *work_directory
   machine-executor:
@@ -51,7 +52,7 @@ jobs:
             -t devatherock/scriptjar:$TAG \
             -t devatherock/scriptjar:latest \
             -f docker/Dockerfile .
-            
+
   dockerhub_readme:
     machine:
       image: ubuntu-2204:2023.04.2
@@ -66,7 +67,7 @@ jobs:
               -e SHORT_DESCRIPTION='CI plugin to convert Groovy scripts to executable jars' \
               -e README_FILEPATH='/workspace/README.md' \
               peterevans/dockerhub-description:3.4.1
-          
+
   functional_test:
     parameters:
       runner:
@@ -85,7 +86,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}          
+          key: v1-dependencies-{{ checksum "build.gradle" }}
   publish_release:
     executor: jdk-executor
     steps:
@@ -100,18 +101,18 @@ jobs:
           docker buildx imagetools create \
             -t devatherock/scriptjar:$TAG devatherock/scriptjar:$DEV_TAG
 
-  docker_build_dry_run:
-    executor: jdk-executor
+  fast_functional_test:
+    executor: arm-executor
     steps:
       - checkout
-      - setup_remote_docker
+      - attach_workspace:
+          at: ~/scriptjar
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}
+            - v1-dependencies-
       - run: |
-          docker buildx create --name rockbuilder \
-            --driver docker-container --use --bootstrap
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            --build-arg GROOVY_VERSION=3.0.9-jre11 \
-            -f docker/Dockerfile .
+          make docker-build test skip_pull=true
 
   notify:
     <<: *slack_image
@@ -177,10 +178,11 @@ workflows:
             - docker-credentials
             - slack-webhook
           requires:
-            - publish_release          
+            - publish_release
+
   pr_check:
     jobs:
-      - docker_build_dry_run:
+      - fast_functional_test:
           context:
             - docker-credentials
           filters:

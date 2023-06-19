@@ -26,7 +26,10 @@ class ScriptJarDockerSpec extends Specification {
 
     void setupSpec() {
         System.setProperty('java.util.logging.SimpleFormatter.format', '%5$s%n')
-        ProcessUtil.executeCommand("docker pull devatherock/scriptjar:latest")
+
+        if (!System.getenv('SKIP_PULL') || !'true'.equalsIgnoreCase(System.getenv('SKIP_PULL'))) {
+            ProcessUtil.executeCommand("docker pull devatherock/scriptjar:latest")
+        }
     }
 
     void cleanup() {
