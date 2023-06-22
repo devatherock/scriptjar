@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 ### Changed
-- Updated dockerhub readme in CI pipeline
+- Updated dockerhub readme in CI pipeline using plugin version `3.4.2`
 - Integration tested the arm image
 - Upgraded gradle to 7
 
