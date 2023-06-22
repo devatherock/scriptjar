@@ -3,6 +3,9 @@ docker_auth: &docker_auth
     username: $DOCKER_USERNAME
     password: $DOCKER_PASSWORD
 
+workspace: &workspace
+  at: ~/scriptjar
+
 slack_image: &slack_image
   docker:
     - image: devatherock/simple-slack:1.0.0
@@ -13,6 +16,11 @@ work_directory: &work_directory
 
 resource_class: &resource_class
   resource_class: small
+
+parameters:
+  repo_name:
+    type: string
+    default: "scriptjar"
 
 executors:
   jdk-executor:
@@ -54,19 +62,21 @@ jobs:
             -f docker/Dockerfile .
 
   dockerhub_readme:
-    machine:
-      image: ubuntu-2204:2023.04.2
-      resource_class: medium
+    docker:
+      - image: peterevans/dockerhub-description:3.4.2
+        <<: *docker_auth
+    <<: *resource_class
+    <<: *work_directory
+    environment:
+      DOCKERHUB_REPOSITORY: 'devatherock/<< pipeline.parameters.repo_name >>'
+      SHORT_DESCRIPTION: 'CI plugin to convert Groovy scripts to executable jars'
+      README_FILEPATH: README.md
     steps:
       - checkout
+      - attach_workspace:
+          <<: *workspace
       - run: |
-          docker run -v $PWD:/workspace \
-              -e DOCKERHUB_USERNAME \
-              -e DOCKERHUB_PASSWORD \
-              -e DOCKERHUB_REPOSITORY='devatherock/scriptjar' \
-              -e SHORT_DESCRIPTION='CI plugin to convert Groovy scripts to executable jars' \
-              -e README_FILEPATH='/workspace/README.md' \
-              peterevans/dockerhub-description:3.4.1
+          sh /entrypoint.sh
 
   functional_test:
     parameters:
@@ -76,7 +86,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/scriptjar
+          <<: *workspace
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "build.gradle" }}
@@ -106,7 +116,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/scriptjar
+          <<: *workspace
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "build.gradle" }}
