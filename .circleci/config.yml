@@ -3,19 +3,28 @@ docker_auth: &docker_auth
     username: $DOCKER_USERNAME
     password: $DOCKER_PASSWORD
 
+vm_executor_image: &vm_executor_image
+  machine:
+    image: ubuntu-2204:2023.04.2
+
 workspace: &workspace
   at: ~/scriptjar
-
-slack_image: &slack_image
-  docker:
-    - image: devatherock/simple-slack:1.0.0
-      <<: *docker_auth
 
 work_directory: &work_directory
   working_directory: ~/scriptjar
 
 resource_class: &resource_class
   resource_class: small
+
+release_filter: &release_filter
+  filters:
+    branches:
+      only: non-existent-branch
+    tags:
+      only: /^v[0-9\.]+$/
+
+orbs:
+  templates: devatherock/circleci-templates@0.7.0
 
 parameters:
   repo_name:
@@ -30,13 +39,11 @@ executors:
     <<: *resource_class
     <<: *work_directory
   machine-executor:
-    machine:
-      image: ubuntu-2204:2023.04.2
+    <<: *vm_executor_image
     resource_class: medium
     <<: *work_directory
   arm-executor:
-    machine:
-      image: ubuntu-2004:2022.04.1
+    <<: *vm_executor_image
     resource_class: arm.medium
     <<: *work_directory
 
@@ -61,23 +68,6 @@ jobs:
             -t devatherock/scriptjar:latest \
             -f docker/Dockerfile .
 
-  dockerhub_readme:
-    docker:
-      - image: peterevans/dockerhub-description:3.4.2
-        <<: *docker_auth
-    <<: *resource_class
-    <<: *work_directory
-    environment:
-      DOCKERHUB_REPOSITORY: 'devatherock/<< pipeline.parameters.repo_name >>'
-      SHORT_DESCRIPTION: 'CI plugin to convert Groovy scripts to executable jars'
-      README_FILEPATH: README.md
-    steps:
-      - checkout
-      - attach_workspace:
-          <<: *workspace
-      - run: |
-          sh /entrypoint.sh
-
   functional_test:
     parameters:
       runner:
@@ -97,6 +87,7 @@ jobs:
           paths:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
+
   publish_release:
     executor: jdk-executor
     steps:
@@ -124,31 +115,31 @@ jobs:
       - run: |
           make docker-build test skip_pull=true
 
-  notify:
-    <<: *slack_image
-    <<: *resource_class
-    environment:
-      TEXT: "Success: {{.CircleBuildUrl}} by {{.CircleUsername}}"
-      COLOR: "#33ad7f"
-      CHANNEL: general
-      TITLE: "Build completed"
-    steps:
-      - run: /bin/simpleslack
-
 workflows:
   version: 2.1
   docker_publish:
     jobs:
-      - publish:
+      - templates/slack:
+          name: notify
           context:
             - docker-credentials
+            - slack-webhook
           filters:
             branches:
               only: master
-      - dockerhub_readme:
+      - publish:
+          context:
+            - docker-credentials
+          requires:
+            - notify
+      - templates/dockerhub_readme_update:
+          name: dockerhub_readme
           context:
             - docker-credentials
             - dockerhub-readme-credentials
+          docker_image: '<< pipeline.parameters.repo_name >>'
+          image_description: 'CI plugin to convert Groovy scripts to executable jars'
+          work_dir: '~/<< pipeline.parameters.repo_name >>'
           requires:
             - publish
       - functional_test:
@@ -165,30 +156,21 @@ workflows:
           runner: arm-executor
           requires:
             - dockerhub_readme
-      - notify:
-          context:
-            - docker-credentials
-            - slack-webhook
-          requires:
-            - functional_test_amd
-            - functional_test_arm
 
   release:
     jobs:
-      - publish_release:
-          context:
-            - docker-credentials
-          filters:
-            branches:
-              only: non-existent-branch
-            tags:
-              only: /^v[0-9\.]+$/
-      - notify:
+      - templates/slack:
+          name: notify
           context:
             - docker-credentials
             - slack-webhook
+          <<: *release_filter
+      - publish_release:
+          context:
+            - docker-credentials
+          <<: *release_filter
           requires:
-            - publish_release
+            - notify
 
   pr_check:
     jobs:

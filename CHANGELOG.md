@@ -2,9 +2,9 @@
 
 ## [Unreleased]
 ### Changed
-- Updated dockerhub readme in CI pipeline using plugin version `3.4.2`
 - Integration tested the arm image
 - Upgraded gradle to 7
+- Simplified CI pipeline using `circleci-templates` orb
 
 ## [2.0.0] - 2023-05-25
 ### Changed
